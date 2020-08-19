@@ -5,20 +5,20 @@ from PIL import Image
 import cv2
 from PIL import Image, ImageOps
 import numpy as np
-import tensorflow as tf
 import requests
 from io import BytesIO
+from . import utils 
 
-model = tf.keras.models.load_model('my_model.hdf5')
 
 @csrf_exempt
 def index(request):
-    body_unicode = request.body.decode('utf-8')
-    body = json.loads(body_unicode)
+    obj = predict_cat_dog(request)
     
-    img_res = requests.get(body['url'])
-    img = Image.open(BytesIO(img_res.content))
-    prediction = import_and_predict(img, model)
+    return HttpResponse(json.dumps(obj), content_type="application/json")
+
+def predict_cat_dog(request):
+    img = Image.open(request.FILES['animal'].file)
+    prediction = using_model(img, utils.get_model())
     
     if np.argmax(prediction) == 0:
         animal = 'cat'
@@ -29,11 +29,10 @@ def index(request):
     
     obj['animal'] = animal
     obj['cat_prob'] = str(prediction[0][0])
-    obj['dog'] = str(prediction[0][1])
-    return HttpResponse(json.dumps(obj), content_type="application/json")
+    obj['dog_prob'] = str(prediction[0][1])
+    return obj
 
-
-def import_and_predict(image_data, model):    
+def using_model(image_data, model):    
     size = (150,150)    
     image = ImageOps.fit(image_data, size, Image.ANTIALIAS)
     image = np.asarray(image)
