@@ -1,19 +1,22 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Navbar/>
+    <CatDogClassifier msg="Welcome to Your Vue.js + TypeScript App"/>
   </div>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+import CatDogClassifier from './components/CatDogClassifier.vue';
+import Navbar from './components/Navbar';
 
-export default {
-  name: 'App',
+@Component({
   components: {
-    HelloWorld
-  }
-}
+    CatDogClassifier,
+    Navbar,
+  },
+})
+export default class App extends Vue {}
 </script>
 
 <style>
@@ -23,6 +26,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 80px;
 }
 </style>

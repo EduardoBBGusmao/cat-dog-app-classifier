@@ -5,13 +5,13 @@ from PIL import Image
 import cv2
 from PIL import Image, ImageOps
 import numpy as np
-import requests
 from io import BytesIO
 from . import utils 
 
 
 @csrf_exempt
 def index(request):
+    obj = {}
     obj = predict_cat_dog(request)
     
     return HttpResponse(json.dumps(obj), content_type="application/json")
