@@ -1,29 +1,31 @@
 <template>
-  <div class="container">
-    <div>
-      <h2> It's a cat or a dog?</h2>
-    </div>
-    <section>
-      <div class="box">
+  <div class="width-50 h-100 d-flex justify-content-center">
+    <div class=" d-flex"> 
+      <div class="flex-col-sm  align-self-center max-w">
         <div>
-          <img :src="src1" class="img-size" height="300">
+          <div class="app-title">CAT OR DOG CLASSIFIER</div>
         </div>
-        <div class="inputWrapper">
-          <input class="inputFile" type="file" ref="file" @change="selectFile"/>
-        </div>
-      </div>
-      <div class="box">
-        <h3>Upload an Image of a Cat or a Dog so I can predict the result</h3>
-        <h4>{{ complement }}</h4>
-        <h4>
-          {{ predictedAnimal }}
-        </h4>
-      </div>
-
-    </section>
-        <button class="btn btn-success" @click="upload">
+        <section>
+          <div class="app-description">
+           Find out if it’s a cat or a dog! It’s very simple, just upload a photo and then I will predict the result!
+          </div>
+          <div class="box">
+            <div class="input-group">
+              <div class="custom-file">
+                <input type="file" ref="file" @change="selectFile" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
+                <label class="custom-file-label" for="inputGroupFile04">{{currentFile.name}}</label>
+              </div>
+            </div>
+          </div>
+          <div class="predict-response">
+            {{ predictedAnimal }}
+            </div>
+        </section>
+        <button class="btn btn-predict" @click="upload">
           Predict
         </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -34,7 +36,7 @@ import UploadFileService from './../services/UploadFileService';
 @Component
 export default class CatDogClassifier extends Vue {
   private selectedFiles: any = undefined;
-  private currentFile: any = {};
+  private currentFile: any = {name:'Choose File'};
   private src1: any = '';
   private complement: any = ''
   private predictedAnimal: any = '';
@@ -43,7 +45,7 @@ export default class CatDogClassifier extends Vue {
     this.selectedFiles = this.$refs.file.files;
     this.currentFile = this.selectedFiles.item(0);
     this.src1 = URL.createObjectURL(this.currentFile)
-    console.log(this.currentFile)
+    this.predictedAnimal = '';
   }
   upload() {
       UploadFileService.upload(this.currentFile)
@@ -59,9 +61,11 @@ export default class CatDogClassifier extends Vue {
 
   handlePrediction(response) {
     if (response.animal === 'dog') {
-      this.predictedAnimal = 'a Dog';
+      const dogProb = Math.round(parseFloat(response.dog_prob)*100);
+      this.predictedAnimal = `${dogProb}% probability of being a Dog`;
     } else {
-      this.predictedAnimal = 'a Cat';
+      const catProb = Math.round(parseFloat(response.cat_prob)*100);
+      this.predictedAnimal = `${catProb}% probability of being a Cat`;
     }
   }
 }
@@ -69,9 +73,6 @@ export default class CatDogClassifier extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.container {
-  margin-top: 100px;
-}
 ul {
   list-style-type: none;
   padding: 0;
@@ -79,6 +80,10 @@ ul {
 li {
   display: inline-block;
   margin: 0 10px;
+}
+.max-w {
+  max-width: 480px;
+  text-align: justify;
 }
 a {
   color: #42b983;
@@ -99,6 +104,10 @@ section {
 .fileInput {
   justify-content: center;
 }
+h2 {
+  margin: 0;
+  padding: 0;
+}
 input {
   justify-content: center;
 }
@@ -107,11 +116,45 @@ button {
   background-color: #333;
 }
 .box {
-  margin: 20px 50px;
+  padding: 20px 50px;
+  margin: 20px 0;
   flex-wrap: wrap;
   width: 300px;
 }
 
+.app-title {
+  font-style: normal;
+  font-weight: 900;
+  font-size: 70px;
+  line-height: 78px;
+  margin-bottom: 30px;
+  color: #5C5CCC;
+
+}
+  .width-50 {
+    width: 50%;
+  }
+@media screen and (max-width: 600px)  {
+  .width-50 {
+    width: 100%;
+    padding: 30px;
+  }
+  .app-title {
+    font-style: normal;
+    font-weight: 900;
+    font-size: 40px;
+    line-height: 50px;
+    margin-bottom: 30px;
+    color: #5C5CCC;
+  }
+}
+.app-description {
+  text-align: justify;
+  font-size: 26px;
+  line-height: 30px;
+
+  color: #000000;
+}
 .inputFile {
   overflow: hidden;
   display: block;
@@ -145,45 +188,19 @@ button {
   line-height: 30px;
   border-radius: 5px;
 }
-button {
-  overflow: hidden;
-  display: block;
-  position: relative;
-  width: 200px;
-  margin: auto;
-  cursor: pointer;
+.predict-response {
   font-size: 20px;
-  border: 0;
-  height: 60px;
-  border-radius: 5px;
-  color: #fff;
-  outline: 0;
-
-}
-button {
-  overflow: hidden;
-  display: block;
-  position: relative;
-  width: 200px;
-  margin: auto;
-  cursor: pointer;
-  font-size: 20px;
-  border: 0;
-  height: 60px;
-  border-radius: 5px;
-  color: #fff;
-  outline: 0;
-
+  margin-bottom: 40px;
 }
 
-button :after {
-  transition: 200ms all ease;
-  border-bottom: 3px solid rgba(0,0,0,.2);
-  background: #333;
-  text-shadow: 0 2px 0 rgba(0,0,0,.2);
-  color: #fff;
-  font-size: 20px;
-  text-align: center;
+.btn-predict {
+  background-color: #5C5CCC;
+  width: 100%;
+  color: white;
+}
 
+.btn-predict :hover {
+  color: black;
+  background-color: white;
 }
 </style>

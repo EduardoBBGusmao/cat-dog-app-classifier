@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <Navbar/>
     <CatDogClassifier msg="Welcome to Your Vue.js + TypeScript App"/>
   </div>
 </template>
@@ -26,6 +25,11 @@ export default class App extends Vue {}
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 80px;
+  background-image: url('./assets/3732944.jpg');
+  height: 100vh;
+  background-size: 1100px;
+  background-repeat: no-repeat;
+  background-position-x: 120%;
+  background-position-y: 50%;
 }
 </style>
