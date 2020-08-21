@@ -13,10 +13,11 @@
             <div class="input-group">
               <div class="custom-file">
                 <input type="file" ref="file" @change="selectFile" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
-                <label class="custom-file-label" for="inputGroupFile04">{{currentFile.name}}</label>
+                <label class="custom-file-label" for="inputGroupFile04">{{fileName}}</label>
               </div>
             </div>
           </div>
+          <div class="w-100"></div>
           <div class="predict-response">
             {{ predictedAnimal }}
             </div>
@@ -36,7 +37,8 @@ import UploadFileService from './../services/UploadFileService';
 @Component
 export default class CatDogClassifier extends Vue {
   private selectedFiles: any = undefined;
-  private currentFile: any = {name:'Choose File'};
+  private currentFile: any = {};
+  private fileName: any = 'Choose File';
   private src1: any = '';
   private complement: any = ''
   private predictedAnimal: any = '';
@@ -44,22 +46,24 @@ export default class CatDogClassifier extends Vue {
   selectFile(): void {
     this.selectedFiles = this.$refs.file.files;
     this.currentFile = this.selectedFiles.item(0);
-    this.src1 = URL.createObjectURL(this.currentFile)
+    this.fileName = this.currentFile.name;
+    this.src1 = URL.createObjectURL(this.currentFile);
     this.predictedAnimal = '';
   }
   upload() {
+    if (this.selectedFiles){
       UploadFileService.upload(this.currentFile)
         .then(response => {
-          console.log(response);
-          // this.animal = response.data.animal;
-          this.handlePrediction(response.data)
-          this.complement = 'The animal in the image is:'
+          this.handlePrediction(response.data);
         });
 
-      this.selectedFiles = undefined;
     }
-
-  handlePrediction(response) {
+    else {
+      this.predictedAnimal = 'No file uploaded';
+    }
+    this.selectedFiles = undefined;
+  }
+  handlePrediction(response: any) {
     if (response.animal === 'dog') {
       const dogProb = Math.round(parseFloat(response.dog_prob)*100);
       this.predictedAnimal = `${dogProb}% probability of being a Dog`;
